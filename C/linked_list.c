@@ -9,8 +9,7 @@
  *
  */
 
-#include "stdlib.h"
-#include "stdio.h"
+#include "linked_list.h"
 
 #define CHECK_MALLOC(f, p)          \
   if (!p)                           \
@@ -18,6 +17,8 @@
     printf("%s MALLOC ERROR\n", f); \
     return NULL;                    \
   }
+
+#define show_bool(b) (b ? "true" : "false")
 
 typedef struct list
 {
@@ -58,6 +59,37 @@ void print_list(list l)
   printf("]\n");
 }
 
+list last(list l)
+{
+  while (l->next)
+    l = l->next;
+
+  return l;
+}
+
+size_t length(list l)
+{
+  size_t len = 0;
+  while (l)
+  {
+    l = l->next;
+    len++;
+  }
+
+  return len;
+}
+
+// create a list of size `n` with `val` in [0...n)
+list nlist(int n)
+{
+  list hd = make_cell(0);
+  list l = hd;
+  for (int i = 1; i < n; i++)
+    l = next(l, i);
+
+  return hd;
+}
+
 /* free the memory of all cells of `l`*/
 void free_list(list l)
 {
@@ -70,12 +102,32 @@ void free_list(list l)
   }
 }
 
+bool has_cycle(list l)
+{
+  list p1 = l, p2 = l;
+  while (p1 && p2)
+  {
+    p1 = p1->next;
+    p2 = p2->next ? p2->next->next : NULL;
+    if (p1 == p2)
+      return true;
+  }
+
+  return false;
+}
+
 int main(int argc, char const *argv[])
 {
-  list hd = make_cell(0);
-  list last = next(next(next(hd, 1), 2), 3);
-  print_list(hd);
-  free_list(hd);
+  list l;
+  l = nlist(10);
+  print_list(l);
+  printf("len: %ld\n", length(l));
+  printf("has_cycle: %s\n", show_bool(has_cycle(l)));
+  free_list(l);
+
+  l = nlist(5);
+  last(l)->next = l->next->next;
+  printf("has_cycle: %s\n", show_bool(has_cycle(l)));
 
   return 0;
 }
