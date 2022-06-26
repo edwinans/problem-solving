@@ -58,11 +58,24 @@ void print_list(list l)
   printf("]\n");
 }
 
+/* free the memory of all cells of `l`*/
+void free_list(list l)
+{
+  list next_cell;
+  while (l)
+  {
+    next_cell = l->next;
+    free(l);
+    l = next_cell;
+  }
+}
+
 int main(int argc, char const *argv[])
 {
   list hd = make_cell(0);
   list last = next(next(next(hd, 1), 2), 3);
   print_list(hd);
+  free_list(hd);
 
   return 0;
 }
